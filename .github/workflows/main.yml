@@ -1,0 +1,27 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install required dependencies
+        run: |
+          sudo apt update
+          sudo apt install --yes --no-install-recommends git ca-certificates
+
+          sudo apt install --yes --no-install-recommends npm curl
+          # need to update nodejs because with ubuntu's default nodejs version we would get this error:
+          # error @jest/core@29.4.1: The engine "node" is incompatible with this module. Expected version "^14.15.0 || ^16.10.0 || >=18.0.0". Got "12.22.9"
+          sudo npm install --global n
+          sudo n lts
+      - name: Install Yarn
+        run: npm install --global yarn
+      - name: Build
+        run: yarn install
+      - name: Running tsil on sample file
+        run: yarn try
+      
